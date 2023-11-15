@@ -19,12 +19,15 @@ export default function Test() {
   const [renderer, setRenderer] = useState<any>(new THREE.WebGLRenderer());
   const mount = useRef<HTMLDivElement | null>(null);
 
-  function animate() {
+  function animate(cube: any) {
     if (renderer) {
       //렌더링.
       //setinterval대신 requestAnimationFrame를 쓰자.
       //그건 사용자가 다른 브라우저 탭으로 이동할 때 자동으로 일시 정지된다.
-      requestAnimationFrame(animate);
+      requestAnimationFrame(() => animate(cube));
+
+      cube.rotation.x += 0.01;
+      cube.rotation.y += 0.01;
       renderer.render(scene, camera);
     }
   }
@@ -61,8 +64,7 @@ export default function Test() {
 
           camera.position.z = 5;
 
-          console.log(cube, scene);
-          animate();
+          animate(cube);
         }}
       >
         추가
