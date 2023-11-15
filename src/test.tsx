@@ -38,7 +38,7 @@ export default function Test() {
       //렌더링 크기. 값이 작을수록 고성능이 필요하다.
       //렌더링 크기를 유지하되 더 낮은 해상도로 렌더링하려면 뒤에 false(updateStyle)를 붙여주자.
 
-      if (mount.current.childElementCount === 1)
+      if (!mount.current.querySelector("canvas"))
         mount.current.appendChild(renderer.domElement);
     }
     return () => {
@@ -67,7 +67,26 @@ export default function Test() {
           animate(cube);
         }}
       >
-        추가
+        사각형 추가
+      </button>
+      <button
+        onClick={() => {
+          camera.position.set(0, 0, 100);
+          camera.lookAt(0, 0, 0);
+          const material = new THREE.LineBasicMaterial({ color: 0x0000ff });
+          const points = [];
+          points.push(new THREE.Vector3(-10, 0, 0));
+          points.push(new THREE.Vector3(0, 10, 0));
+          points.push(new THREE.Vector3(10, 0, 0));
+
+          const geometry = new THREE.BufferGeometry().setFromPoints(points);
+          const line = new THREE.Line(geometry, material);
+
+          scene.add(line);
+          renderer.render(scene, camera);
+        }}
+      >
+        선 추가
       </button>
     </div>
   );
