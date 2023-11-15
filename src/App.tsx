@@ -1,7 +1,8 @@
 import React from "react";
+import Test from "./test";
 
 function App() {
-  return <div> test</div>;
+  return <Test />;
 }
 
 export default App;
