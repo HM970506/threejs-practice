@@ -19,6 +19,9 @@ export default function Test() {
     //far, near: 이 범위 밖의 물체는 렌더링되지 않음
   );
   const [renderer, setRenderer] = useState<any>(new THREE.WebGLRenderer());
+  const [textureLoader, setTextureLoader] = useState<any>(
+    new THREE.TextureLoader()
+  );
   const mount = useRef<HTMLDivElement | null>(null);
 
   function animate(cube: any) {
@@ -40,6 +43,8 @@ export default function Test() {
       //렌더링 크기. 값이 작을수록 고성능이 필요하다.
       //렌더링 크기를 유지하되 더 낮은 해상도로 렌더링하려면 뒤에 false(updateStyle)를 붙여주자.
 
+      renderer.render(scene, camera);
+
       if (!mount.current.querySelector("canvas"))
         mount.current.appendChild(renderer.domElement);
     }
@@ -48,6 +53,13 @@ export default function Test() {
       if (renderer) renderer.dispose();
     };
   }, [mount]);
+
+  useEffect(() => {
+    scene.background = new THREE.Color("white");
+    let light = new THREE.DirectionalLight(0xffffff, 10);
+    scene.add(light);
+    camera.position.z = 10;
+  }, [scene]);
 
   return (
     <div ref={mount}>
@@ -64,31 +76,23 @@ export default function Test() {
           scene.add(cube);
           //기본적으로 0,0,0에 추가된다
 
-          camera.position.z = 5;
-
           animate(cube);
         }}
       >
         사각형 추가
       </button>
       <button
-        onClick={() => {
-          camera.position.set(0, 0, 100);
-          camera.lookAt(0, 0, 0);
-          const material = new THREE.LineBasicMaterial({ color: 0x0000ff });
-          const points = [];
-          points.push(new THREE.Vector3(-10, 0, 0));
-          points.push(new THREE.Vector3(0, 10, 0));
-          points.push(new THREE.Vector3(10, 0, 0));
+        onClick={async () => {
+          const geometry = new THREE.BoxGeometry(10, 10, 0.1);
+          const texture = await textureLoader.loadAsync("image/bear.jpg");
+          const material = new THREE.MeshBasicMaterial({ map: texture });
+          const cube = new THREE.Mesh(geometry, material);
 
-          const geometry = new THREE.BufferGeometry().setFromPoints(points);
-          const line = new THREE.Line(geometry, material);
-
-          scene.add(line);
+          scene.add(cube);
           renderer.render(scene, camera);
         }}
       >
-        선 추가
+        텍스처 들어간 사각형 추가
       </button>
       <button
         onClick={() => {
@@ -99,11 +103,8 @@ export default function Test() {
           const loader = new GLTFLoader();
           loader.load(`/glft/teddybear.gltf`, (gltf) => {
             camera.position.set(0, 0, 50);
-            camera.lookAt(0, 0, 50);
+            camera.lookAt(0, 0, 55);
 
-            scene.background = new THREE.Color("white");
-            let light = new THREE.DirectionalLight(0xffffff, 10);
-            scene.add(light);
             scene.add(gltf.scene);
             renderer.render(scene, camera);
           });
