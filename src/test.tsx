@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 export default function Test() {
   const [scene, setScene] = useState<any>(new THREE.Scene());
@@ -87,6 +89,27 @@ export default function Test() {
         }}
       >
         선 추가
+      </button>
+      <button
+        onClick={() => {
+          let controls = new OrbitControls(camera, renderer.domElement);
+          controls.target.set(0, 0, 0);
+          controls.autoRotate = true;
+
+          const loader = new GLTFLoader();
+          loader.load(`/glft/teddybear.gltf`, (gltf) => {
+            camera.position.set(0, 0, 50);
+            camera.lookAt(0, 0, 50);
+
+            scene.background = new THREE.Color("white");
+            let light = new THREE.DirectionalLight(0xffffff, 10);
+            scene.add(light);
+            scene.add(gltf.scene);
+            renderer.render(scene, camera);
+          });
+        }}
+      >
+        테디베어
       </button>
     </div>
   );
